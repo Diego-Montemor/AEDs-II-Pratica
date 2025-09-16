@@ -48,12 +48,34 @@ void inserir_fim(struct listaDupla *lista,int elemento) {
     }
  }
 
-
+void inserir_posicao(struct listaDupla *lista,int valor,int posicao){
+    tmp = (struct node*) malloc (sizeof(struct node));
+    tmp->data = valor;
+    if(!ehVazia(lista)){
+        int i = 0;
+        struct node *prev, *tmp1 = lista->inicio;
+        while(tmp->next != NULL && i < posicao - 1){// aqui ele termina com o prev um atras do tmp com o tmp sendo a posição desejada
+            i++;
+            prev = tmp1;
+            tmp1 = tmp1->next;
+        }
+        if(posicao == 1){
+            printf("O elemento foi inserido no inicio da lista");
+            inserir_inicio(lista,valor);
+        }else{
+            printf("o elemento foi posicionado na posicao %d",posicao);
+            tmp->prev = prev;
+            prev->next = tmp;
+            prev->next = tmp1;
+            tmp1->prev = tmp;
+        }
+    }else inserir_inicio(lista, valor);
+};
 
 void apagar(int ele) {
-	struct node *pre=tmp;
+	struct node *pre = tmp;
 	while (tmp != NULL) {
-		if (tmp->data==ele) {
+		if (tmp->data == ele) {
             if (tmp == p) {
                 p = tmp->next;
 			    free(tmp);
@@ -136,28 +158,6 @@ int obter_ultimo(void) {
 	}
 }
 
-void inserir_posicao(int valor,int posicao){
-    if(p != NULL){
-        int i = 0;
-        struct node *prev;
-        tmp = p;
-        while(tmp->next != NULL && i < posicao - 1){
-            i = i + 1;
-            prev = tmp;
-            tmp = tmp->next;
-        }
-        if(posicao == 1){
-            printf("O elemento foi inserido no inicio da lista");
-            inserir_inicio(valor);        
-        }else{
-            printf("o elemento foi posicionado na posicao %d",posicao);
-            tmp1 = (struct node*) malloc (sizeof(struct node));
-            tmp1->data = valor;
-            tmp1->next = tmp;
-            prev->next = tmp1;
-        }
-    }else inserir_inicio(valor);
-};
 
 void remover_posicao(int posicao){
     if(p != NULL){
