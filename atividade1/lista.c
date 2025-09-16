@@ -72,16 +72,21 @@ void inserir_posicao(struct listaDupla *lista,int valor,int posicao){
     }else inserir_inicio(lista, valor);
 };
 
-void apagar(int ele) {
-	struct node *pre = tmp;
+void apagar(struct listaDupla *lista,int ele) {
+	tmp = lista->inicio;
+    struct node *pre = tmp;
 	while (tmp != NULL) {
 		if (tmp->data == ele) {
-            if (tmp == p) {
-                p = tmp->next;
+            if (tmp == lista->inicio) {
+                lista->inicio = lista->inicio->next;
+                lista->inicio->prev = NULL;
 			    free(tmp);
 			    return;
 			} else {
-                pre->next=tmp->next;
+                pre->next = tmp->next;
+                if(tmp->next != NULL){
+                    tmp->next->prev = pre;
+                }
 			    free(tmp);
 			    return;
 			}
@@ -93,96 +98,93 @@ void apagar(int ele) {
 	printf("\n Valor não encontrado! ");
  }
  
-void apagar_inicio() {	
-	tmp = p;
-	if (p == NULL) {
+void apagar_inicio(struct listaDupla *lista) {	
+	tmp = lista->inicio;
+	if (ehVazia(lista)) {
 		printf("\n Nenhum elemento deletado ");
     } else {
-		printf("\nElemento deletado - %d", p->data);
-        p = p->next;
+		printf("\nElemento deletado - %d", lista->inicio->data);
+        lista->inicio = lista->inicio->next;
+        lista->inicio->prev = NULL;
         free(tmp);
 	}
  }
  
-void apagar_fim() {	
-	tmp=p;
+void apagar_fim(struct listaDupla *lista) {	
+	tmp = lista->fim;
 	struct node* pre;
-	if(p == NULL) {
+	if(ehVazia(lista)) {
 		printf("\n Nenhum elemento deletado ");
-    } else if (p->next == NULL) {
-		printf("\nElemento deletado - %d", p->data);
-		p = NULL;
+    } else if (lista->inicio->next == NULL) {
+		printf("\nElemento deletado - %d", lista->inicio->data);
+		lista->inicio = NULL;
+        lista->fim = NULL;
 	} else {
-		while (tmp->next != NULL) {
-			pre=tmp;
-			tmp=tmp->next;
-		}
+		pre = lista->fim->prev;
 		pre->next=NULL;
-        free(pre);
+        lista->fim = pre;
 		printf("\nElemento deletado - %d", tmp->data);
+        free(tmp);
 	}
 }
 
-void imprimir() {
-	tmp = p;
- 	while (tmp != NULL) {
+void imprimirInicio(struct listaDupla *lista) {
+	tmp = lista->inicio;
+ 	while (tmp->next != NULL) {
         printf("\n %d",tmp->data);
 	 	tmp = tmp->next;
 	}
 }
 
-int obter_primeiro(void) {
-    tmp = p;
-	if (p == NULL) {
+void imprimirFim(struct listaDupla *lista) {
+	tmp = lista->fim;
+ 	while (tmp->prev != NULL) {
+        printf("\n %d",tmp->data);
+	 	tmp = tmp->prev;
+	}
+}
+
+int obter_primeiro(struct listaDupla *lista) {
+    tmp = lista->inicio;
+	if (ehVazia(lista)) {
 		printf("\n Nenhum elemento encontrado ");
     } else {
-		return (p->data);
+		return (tmp->data);
 	}
 }
 
-int obter_ultimo(void) {
-    tmp = p;
-	struct node* pre;
-	if (p == NULL) {
+int obter_ultimo(struct listaDupla *lista) {
+	if (ehVazia(lista)) {
 		printf("\n Nenhum elemento encontrado ");
         return (0);
-    } else if (p->next==NULL) {
-		return(p->data);
-	} else {
-		while (tmp->next!=NULL) {
-			pre=tmp;
-			tmp=tmp->next;
-		}
-		pre->next=NULL;
-		return(tmp->data);
-	}
+	} else return lista->fim->data;
 }
 
 
-void remover_posicao(int posicao){
-    if(p != NULL){
-    int i = 0;
-    tmp = p;
-    while(tmp->next != NULL && i < posicao - 1){
-        i = i + 1;
-        tmp1 = tmp;
-        tmp = tmp->next;
-    }
-    if(posicao == 1){
-        p = p->next;
-        tmp1->next = NULL;
-    }else{
-        tmp1->next = tmp->next;
-        tmp->next = NULL;
-        free(tmp);
-    }   
+void remover_posicao(struct listaDupla *lista,int posicao){
+    if(!ehVazia(lista)){
+        int i = 0;
+        tmp = lista->inicio;
+        struct node *pre;
+        while(tmp->next != NULL && i < posicao - 1){
+            i = i + 1;
+            pre = tmp;
+            tmp = tmp->next;
+        }
+        if(posicao == 1) apagar_inicio(lista); 
+            else{
+            pre->next = tmp->next;
+            tmp->next->prev = pre;
+            tmp->next = NULL;
+            free(tmp);
+            }   
     }else printf("A lista esta vazia");
 }
 
-int buscar_posicao(int posicao){
-    if(p != NULL){
+int buscar_posicao(struct listaDupla *lista, int posicao){
+    tmp = lista->inicio;
+    if(tmp != NULL){
         int i = 1;
-        tmp = p;
         while(tmp->next != NULL && i < posicao){
             i++;
             tmp = tmp->next;
@@ -218,7 +220,7 @@ int main() {
         switch(n) {
             case 1: printf("\nDigite o valor ");
                     scanf("%d",&val);
-                    inserir_fim(val);
+                    inserir_fim(lista,val);
                     break;
             case 2: printf("\nDigite o valor ");
                     scanf("%d",&val);
@@ -226,28 +228,28 @@ int main() {
                     break;
             case 3: printf("\nDigite o valor ");
                     scanf("%d",&val);
-                    apagar(val);
+                    apagar(lista,val);
                     break;
             case 4: 
-                    apagar_inicio();
+                    apagar_inicio(lista);
                     break;
             case 5: 
-                    apagar_fim();
+                    apagar_fim(lista);
                     break;
             case 6: imprimir();
                     break;
-            case 7: if (ehVazia() == 1) {
+            case 7: if (ehVazia(lista) == 1) {
                         printf("\nLista vazia");
                     } else {
                         printf("\nLista não vazia");
                     }
                     break;
-            case 8: val = obter_primeiro();
+            case 8: val = obter_primeiro(lista);
                     if (val != 0) {
                         printf("%d", val);
                     }
                     break;
-            case 9: val = obter_ultimo();
+            case 9: val = obter_ultimo(lista);
                     if (val != 0) {
                         printf("%d", val);
                     }
@@ -258,21 +260,21 @@ int main() {
                     scanf("%d",&valor);
                     printf("Digite a posicao desejada: ");
                     scanf("%d", &posicao);
-                    inserir_posicao(valor,posicao);
+                    inserir_posicao(lista,valor,posicao);
                     }
                     break;
             case 11:{
                     int posicao;
                     printf("Digite a posicao que deve ser removida: ");
                     scanf("%d", &posicao);
-                    remover_posicao(posicao);
+                    remover_posicao(lista,posicao);
             }
             break; 
             case 12:{
                     int posicao, valor;
                     printf("Digite a posicao que deve ser buscada");
                     scanf("%d", &posicao);
-                    valor = buscar_posicao(posicao);
+                    valor = buscar_posicao(lista,posicao);
                     if(valor != 0) printf("%d",valor);
                     else printf("nao foi encontrado nenhum valor nessa posicao");
             }
