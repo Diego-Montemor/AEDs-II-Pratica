@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include <stdbool.h>
-#include "lista.h" 
+//#include "lista.h" 
 
 struct node {
     int data;
@@ -22,23 +22,23 @@ bool ehVazia(struct listaDupla *lista) {
 
 void inserir_inicio(struct listaDupla *lista,int elemento) {
     tmp = (struct node*) malloc (sizeof(struct node));
-	tmp->data=elemento;    
+	tmp->data = elemento;    
     tmp->prev = NULL;
+    tmp->next = NULL;
     if(ehVazia(lista)){
         lista->inicio = tmp;
         lista->fim = tmp;
-        tmp->next = NULL;
-        return;
+    }else{
+        tmp->next = lista->inicio;
+        lista->inicio->prev = tmp;
+        lista->inicio = tmp;
     }
-    tmp->data = elemento;
-	tmp->next = lista->inicio;
-    lista->inicio->prev = tmp;
 }
 
 void inserir_fim(struct listaDupla *lista,int elemento) {
     tmp = (struct node*) malloc (sizeof(struct node));
     tmp->data = elemento;
-    tmp->next=NULL;
+    tmp->next = NULL;
     if (ehVazia) {
         inserir_inicio(lista, elemento);
     } else {       
@@ -128,7 +128,7 @@ void apagar_fim(struct listaDupla *lista) {
 	}
 }
 
-void imprimirInicio(struct listaDupla *lista) {
+void imprimir(struct listaDupla *lista) {
 	tmp = lista->inicio;
  	while (tmp->next != NULL) {
         printf("\n %d",tmp->data);
@@ -136,13 +136,6 @@ void imprimirInicio(struct listaDupla *lista) {
 	}
 }
 
-void imprimirFim(struct listaDupla *lista) {
-	tmp = lista->fim;
- 	while (tmp->prev != NULL) {
-        printf("\n %d",tmp->data);
-	 	tmp = tmp->prev;
-	}
-}
 
 int obter_primeiro(struct listaDupla *lista) {
     tmp = lista->inicio;
@@ -197,7 +190,7 @@ int buscar_posicao(struct listaDupla *lista, int posicao){
 
 int main() { 
     int val, n;
-    struct listaDupla *lista;
+    struct listaDupla *lista = malloc(sizeof(struct listaDupla));
     lista->fim = NULL;
     lista->inicio = NULL;
     do {
@@ -236,7 +229,7 @@ int main() {
             case 5: 
                     apagar_fim(lista);
                     break;
-            case 6: imprimir();
+            case 6: imprimir(lista);
                     break;
             case 7: if (ehVazia(lista) == 1) {
                         printf("\nLista vazia");
